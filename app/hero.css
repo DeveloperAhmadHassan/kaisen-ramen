@@ -1,0 +1,509 @@
+/* Everything on the artboard is placed in design units (1u = 1px of the
+   800 x 600 comp). var(--u) is one unit; the artboard is a size container, so
+   100cqw is its width. On portrait screens the artboard shows a 380 x 700
+   window onto the same design (see the media query at the end). */
+.kr-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The hero: the artboard fills the first screen, and the ticker strips sit just
+   below the fold (they scroll into view), all on the same red with the same
+   waves and embers behind. */
+.kr-hero {
+  --tk-font: clamp(22px, 3.2vw, 40px);
+  /* the strips' height: two bands (text plus padding), overlapped, with room
+     for their tilt */
+  --strips-h: calc(2.3 * var(--tk-font) + 96px);
+  /* room under the strips for the next section's brush-stroke edge, which
+     overlaps the hero's foot (match --edge on .kr-brush in sections.css) */
+  --brush-room: clamp(44px, 6vw, 84px);
+  position: relative;
+  isolation: isolate;
+  flex: 1;
+  min-height: calc(100svh + var(--strips-h) + var(--brush-room));
+  display: grid;
+  grid-template-rows: 100svh var(--strips-h) var(--brush-room);
+  /* one screen-wide column: the strips' long bands must not widen it */
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  /* clipped at the sides only */
+  overflow-x: clip;
+  background-color: #780a0e;
+  background-image: radial-gradient(
+    ellipse 75% 70% at 50% 42%,
+    #860f13 0%,
+    #800c10 55%,
+    #6d070a 100%
+  );
+}
+
+/* animated layers behind the artboard (see hero-backdrop.tsx). The wrapper
+   sets no z-index, so the wave layer can still multiply onto the red. */
+.kr-backdrop {
+  position: absolute;
+  inset: 0;
+  /* the oversized light and wave layers stay inside the hero (this doesn't
+     create a stacking context, so the waves still multiply onto the red) */
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.kr-backdrop > * {
+  z-index: -1;
+}
+
+/* soft warm light that wanders slowly over the red */
+.kr-haze {
+  position: absolute;
+  width: 70vmax;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  will-change: transform, opacity;
+}
+
+.kr-haze-a {
+  left: -18vmax;
+  top: -22vmax;
+  opacity: 0.6;
+  background: radial-gradient(closest-side, rgba(214, 52, 34, 0.75), rgba(214, 52, 34, 0));
+}
+
+.kr-haze-b {
+  right: -20vmax;
+  bottom: -26vmax;
+  opacity: 0.55;
+  background: radial-gradient(closest-side, rgba(226, 92, 28, 0.6), rgba(226, 92, 28, 0));
+}
+
+/* seigaiha (wave) texture, multiplied over the red so it only darkens.
+   It overhangs by the drift distance so it never shows an edge. */
+.kr-waves {
+  position: absolute;
+  inset: 0 -176px -88px 0;
+  /* fades out at the hero's foot, where the ticker's own waves fade in */
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 200px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 200px), transparent);
+  will-change: transform;
+  mix-blend-mode: multiply;
+  opacity: 0.18;
+  background-color: #fff;
+  background-image:
+    radial-gradient(circle at 100% 150%, #fff 24%, #555 24%, #555 28%, #fff 28%, #fff 36%, #555 36%, #555 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0 150%, #fff 24%, #555 24%, #555 28%, #fff 28%, #fff 36%, #555 36%, #555 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50% 100%, #555 10%, #fff 10%, #fff 23%, #555 23%, #555 30%, #fff 30%, #fff 43%, #555 43%, #555 50%, #fff 50%, #fff 63%, #555 63%, #555 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, #555 5%, #fff 5%, #fff 15%, #555 15%, #555 20%, #fff 20%, #fff 29%, #555 29%, #555 34%, #fff 34%, #fff 44%, #555 44%, #555 49%, transparent 49%, transparent),
+    radial-gradient(circle at 0 50%, #555 5%, #fff 5%, #fff 15%, #555 15%, #555 20%, #fff 20%, #fff 29%, #555 29%, #555 34%, #fff 34%, #fff 44%, #555 44%, #555 49%, transparent 49%, transparent);
+  background-size: 44px 22px;
+}
+
+/* glowing chili embers that drift up through the background */
+.kr-ember {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle, #ffd59a 0%, #ff8a3d 45%, rgba(255, 90, 30, 0) 75%);
+  box-shadow: 0 0 10px 3px rgba(255, 120, 40, 0.55);
+  will-change: transform, opacity;
+}
+
+.kr-artboard {
+  --vw: 800; /* design units across the artboard */
+  --ox: 0; /* design x at the artboard's left edge */
+  --dy: 0; /* extra drop for the lower group (name, arrows, CTA) */
+  --m: 0; /* 1 in the portrait frame: switches box() to its mobile coords */
+  --stretch: 0px; /* height beyond the frame's design height, given to the lower group */
+  --u: calc(100cqw / var(--vw));
+  position: relative;
+  container-type: size;
+  /* clip the sides and top (side and parked bowls), but let the chopsticks
+     overhang the bottom edge a little (4% ~ 24 design px; any more and the
+     intro's pieces would show rising up through the strips below) */
+  clip-path: inset(0 0 -4% 0);
+  /* above the strips, so the chopsticks rest on them */
+  z-index: 1;
+  width: min(100vw, 133.333svh);
+  aspect-ratio: 4 / 3;
+}
+
+/* the softer, browner glow behind the title inside the board */
+.kr-glow {
+  position: absolute;
+  will-change: transform, opacity;
+  left: calc((144 - var(--ox)) * var(--u));
+  width: calc(512 * var(--u));
+  top: calc(-60 * var(--u));
+  height: calc(372 * var(--u));
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(104, 36, 38, 0.95) 0%,
+    rgba(104, 36, 38, 0.7) 55%,
+    rgba(104, 36, 38, 0) 100%
+  );
+}
+
+.kr-piece {
+  position: absolute;
+  height: auto;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.kr-board {
+  position: absolute;
+  aspect-ratio: 1;
+  filter: drop-shadow(calc(3.2 * var(--u)) calc(12.8 * var(--u)) calc(6.4 * var(--u)) rgba(25, 0, 2, 0.6))
+    drop-shadow(calc(8 * var(--u)) calc(32 * var(--u)) calc(24 * var(--u)) rgba(25, 0, 2, 0.55));
+}
+
+/* 640 x 556: the comp's ellipse */
+.kr-board-squash {
+  transform: scaleY(0.86875);
+}
+
+.kr-board-ring {
+  display: block;
+  will-change: transform;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* bowls pass over the bottom of the title, as in the comp */
+.kr-bowl {
+  z-index: 1;
+  will-change: transform;
+  filter: drop-shadow(calc(4.8 * var(--u)) calc(11.2 * var(--u)) calc(14.4 * var(--u)) rgba(20, 0, 0, 0.55));
+}
+
+/* garnish slots either side of the centre bowl; they bob gently */
+.kr-float {
+  position: absolute;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.kr-float-item {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+}
+
+.kr-garnish {
+  object-fit: contain;
+  user-select: none;
+  filter: drop-shadow(calc(2.4 * var(--u)) calc(4.8 * var(--u)) calc(4.8 * var(--u)) rgba(20, 0, 0, 0.35));
+}
+
+.kr-chopsticks {
+  filter: drop-shadow(calc(2 * var(--u)) calc(4 * var(--u)) calc(3.2 * var(--u)) rgba(20, 0, 0, 0.45));
+}
+
+.kr-nav {
+  position: absolute;
+  z-index: 2;
+  aspect-ratio: 42 / 41;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.kr-nav:focus-visible {
+  outline: 2px solid #e9852f;
+  outline-offset: 2px;
+}
+
+.kr-pennant {
+  display: block;
+  will-change: transform;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* a text line that clips its own contents, so words can rise out of it.
+   The padding keeps glyph tops and tails clear of the clip edge. */
+.kr-mask {
+  display: block;
+  overflow: hidden;
+  padding: 0.14em 0.2em;
+  margin: -0.14em -0.2em;
+}
+
+.kr-mask-inner {
+  display: block;
+  will-change: transform;
+}
+
+/* hidden until the intro timeline (hero-intro.tsx) has set its start states */
+@media (prefers-reduced-motion: no-preference) {
+  .kr-artboard[data-intro="pending"]
+    :is(.kr-board, .kr-bowl, .kr-float, .kr-chopsticks, .kr-cta, .kr-mask-inner, .kr-rule, .kr-dish, .kr-ornament, .kr-nav) {
+    visibility: hidden;
+  }
+}
+
+.kr-eyebrow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(39.5 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(14 * var(--u));
+  color: #ead6d3;
+  font-size: calc(12.5 * var(--u));
+  line-height: 1;
+  letter-spacing: calc(6.5 * var(--u));
+  text-transform: uppercase;
+  padding-left: calc(6.5 * var(--u));
+}
+
+.kr-rule {
+  width: calc(88 * var(--u));
+  height: calc(1.4 * var(--u));
+  background: #e6a1a6;
+}
+
+/* the rules draw outward from the word */
+.kr-rule:first-child {
+  transform-origin: 100% 50%;
+}
+
+.kr-rule:last-child {
+  transform-origin: 0 50%;
+}
+
+.kr-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(74 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  color: #dedcda;
+  font-size: calc(97 * var(--u));
+  font-weight: 400;
+  line-height: calc(74 * var(--u));
+  letter-spacing: calc(3 * var(--u));
+  transform: scaleX(0.92);
+  text-transform: uppercase;
+  padding-left: calc(4 * var(--u));
+}
+
+.kr-ornament {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc((496.5 + var(--dy)) * var(--u) + var(--stretch) * 0.55); /* DROP_LOWER */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(4 * var(--u));
+}
+
+.kr-ornament span {
+  width: calc(16 * var(--u));
+  height: calc(1.3 * var(--u));
+  background: #ed8f8f;
+}
+
+.kr-ornament i {
+  width: calc(6 * var(--u));
+  height: calc(8 * var(--u));
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: #f27109;
+}
+
+.kr-dish {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc((507 + var(--dy)) * var(--u) + var(--stretch) * 0.55); /* DROP_LOWER */
+  display: grid;
+  margin: 0;
+  perspective: calc(300 * var(--u));
+  color: #fff7e1;
+  font-size: calc(16.5 * var(--u));
+  line-height: calc(20 * var(--u));
+  letter-spacing: calc(1.2 * var(--u));
+  text-align: center;
+  text-transform: uppercase;
+  padding-left: calc(3 * var(--u));
+}
+
+/* every dish name sits in the same spot; only the centre bowl's is visible */
+.kr-dish-name {
+  grid-area: 1 / 1;
+}
+
+/* each line is its own mask, so letters rise out of (and roll within) it */
+.kr-dish-line {
+  display: block;
+  overflow: hidden;
+  padding: 0.12em 0.3em;
+  margin: -0.12em -0.3em;
+}
+
+.kr-char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.kr-cta {
+  position: absolute;
+  left: calc((341 - var(--ox)) * var(--u));
+  top: calc((556 + var(--dy)) * var(--u) + var(--stretch) * 0.55); /* DROP_LOWER */
+  width: calc(121 * var(--u));
+  height: calc(31 * var(--u));
+  display: grid;
+  place-items: center;
+  border-radius: calc(16 * var(--u));
+  background: linear-gradient(180deg, #ba521c 0%, #b44a17 100%);
+  box-shadow: 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(40, 0, 0, 0.35);
+  color: #f6e6cf;
+  font-size: calc(17 * var(--u));
+  line-height: 1;
+  padding-top: calc(3 * var(--u));
+  letter-spacing: calc(1.5 * var(--u));
+  text-transform: uppercase;
+  text-decoration: none;
+  padding-left: calc(1.5 * var(--u));
+  z-index: 2;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  will-change: transform, filter;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kr-cta:focus-visible {
+  outline: 2px solid #ffc06a;
+  outline-offset: 3px;
+}
+
+.kr-cta-label {
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0.09em;
+}
+
+/* warm inner glow that fades in on hover */
+.kr-cta-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(180deg, #e0692a 0%, #c2501a 100%);
+  box-shadow: inset 0 0 calc(10 * var(--u)) rgba(255, 200, 120, 0.55);
+}
+
+/* the strip of light that sweeps across on hover */
+.kr-cta-shine {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -60%;
+  width: 35%;
+  z-index: 1;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, rgba(255, 240, 210, 0), rgba(255, 240, 210, 0.55), rgba(255, 240, 210, 0));
+  pointer-events: none;
+}
+
+.kr-cta-ripple {
+  position: absolute;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: rgba(255, 236, 200, 0.7);
+  pointer-events: none;
+}
+
+/* Portrait screens: a window onto the middle of the design, 380u wide and at
+   least 700u tall, so only the centre bowl shows. It fills the screen height:
+   the tray stays pinned to the top, the lower group drops 80u plus a share of
+   any extra height (DROP_* in artboard.ts), and garnishes and chopsticks take
+   their mobile coords from box(..., mobile). */
+@media (max-aspect-ratio: 4 / 5) {
+  .kr-artboard {
+    --vw: 380;
+    --ox: 210;
+    --dy: 80;
+    --m: 1;
+    --stretch: calc(100cqh - 700 * var(--u));
+    width: min(100vw, calc(100svh * 380 / 700));
+    aspect-ratio: 380 / 700;
+    min-height: 100svh;
+  }
+}
+
+/* ------------------------------------------------------------ ticker strips
+   Two crossing bands of slogans along the foot of the hero (sections/ticker.tsx). */
+.kr-ticker {
+  position: relative;
+  min-width: 0;
+  justify-self: stretch;
+  align-self: stretch;
+  display: grid;
+  align-content: center;
+  overflow-x: clip;
+}
+
+.kr-ticker-band {
+  display: flex;
+  width: max-content;
+  padding-block: 16px;
+  font-family: var(--font-gang);
+  font-size: var(--tk-font);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.kr-ticker-row {
+  position: relative;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.kr-ticker-row:first-child {
+  z-index: 1;
+  background: #e9852f;
+  color: #3d0306;
+  transform: rotate(-2.5deg);
+}
+
+.kr-ticker-row:last-child {
+  margin-top: -18px;
+  background: #f4e7d2;
+  color: #7a0b10;
+  transform: rotate(2deg);
+}
+
+.kr-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding-inline: 0.6em;
+}
+
+.kr-ticker-item svg {
+  width: 0.9em;
+  height: 0.9em;
+}

@@ -1,0 +1,1397 @@
+/* The landing-page sections below the hero (app/sections/*). */
+.kr-sections {
+  --red: #7a0b10;
+  --deep: #3d0306;
+  --ink: #170505;
+  --cream: #f4e7d2;
+  --paper: #efe0c4;
+  --orange: #e9852f;
+  --gold: #d79a4a;
+  --gutter: clamp(18px, 5vw, 72px);
+  --max: 1200px;
+  font-family: var(--font-body), system-ui, sans-serif;
+  color: var(--cream);
+  background: var(--deep);
+  overflow-x: clip;
+}
+
+.kr-wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+
+.kr-sec {
+  --pad: clamp(80px, 13vw, 170px);
+  position: relative;
+  padding-block: var(--pad);
+}
+
+/* ------------------------------------------------------------ patterned backgrounds
+   Each section carries a traditional pattern on a layer behind its content
+   (.kr-pat::before). The layer fades out near the section's top and bottom so
+   neighbouring sections meet softly, and drifts by one tile on a slow loop. */
+.kr-pat {
+  isolation: isolate;
+}
+
+.kr-pat::before {
+  content: "";
+  position: absolute;
+  inset: 0 calc(-1 * var(--tile-w)) calc(-1 * var(--tile-h)) 0;
+  z-index: -1;
+  pointer-events: none;
+  --fade: 140px;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kr-pat::before {
+    animation: kr-pat-drift var(--drift, 40s) linear infinite;
+  }
+}
+
+@keyframes kr-pat-drift {
+  to {
+    transform: translate3d(calc(-1 * var(--tile-w)), calc(-1 * var(--tile-h)), 0);
+  }
+}
+
+/* seigaiha (waves), as in the hero: grey rings multiplied onto the red */
+.kr-pat-waves {
+  --tile-w: 44px;
+  --tile-h: 22px;
+}
+
+.kr-pat-waves::before {
+  mix-blend-mode: multiply;
+  opacity: var(--wave-alpha, 0.22);
+  background-color: #fff;
+  background-image:
+    radial-gradient(circle at 100% 150%, #fff 24%, #555 24%, #555 28%, #fff 28%, #fff 36%, #555 36%, #555 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0 150%, #fff 24%, #555 24%, #555 28%, #fff 28%, #fff 36%, #555 36%, #555 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50% 100%, #555 10%, #fff 10%, #fff 23%, #555 23%, #555 30%, #fff 30%, #fff 43%, #555 43%, #555 50%, #fff 50%, #fff 63%, #555 63%, #555 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, #555 5%, #fff 5%, #fff 15%, #555 15%, #555 20%, #fff 20%, #fff 29%, #555 29%, #555 34%, #fff 34%, #fff 44%, #555 44%, #555 49%, transparent 49%, transparent),
+    radial-gradient(circle at 0 50%, #555 5%, #fff 5%, #fff 15%, #555 15%, #555 20%, #fff 20%, #fff 29%, #555 29%, #555 34%, #fff 34%, #fff 44%, #555 44%, #555 49%, transparent 49%, transparent);
+  background-size: var(--tile-w) var(--tile-h);
+}
+
+/* shippo (interlocking circles), printed faintly in red on the paper sections */
+.kr-pat-shippo {
+  --tile-w: 56px;
+  --tile-h: 56px;
+  --ring: rgba(122, 11, 16, 0.09);
+  --drift: 60s;
+}
+
+.kr-pat-shippo::before {
+  background-image:
+    radial-gradient(circle at 0 0, transparent 69.5%, var(--ring) 70%, var(--ring) 72%, transparent 72.5%),
+    radial-gradient(circle at 100% 0, transparent 69.5%, var(--ring) 70%, var(--ring) 72%, transparent 72.5%),
+    radial-gradient(circle at 0 100%, transparent 69.5%, var(--ring) 70%, var(--ring) 72%, transparent 72.5%),
+    radial-gradient(circle at 100% 100%, transparent 69.5%, var(--ring) 70%, var(--ring) 72%, transparent 72.5%);
+  background-size: var(--tile-w) var(--tile-h);
+}
+
+/* kikko (tortoiseshell hexagons), in faint cream on the near-black sections */
+.kr-pat-kikko {
+  --tile-w: 56px;
+  --tile-h: 100px;
+  --drift: 70s;
+}
+
+.kr-pat-kikko::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='%23f4e7d2' stroke-opacity='.07' stroke-width='1.5'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='%23e9852f' stroke-opacity='.06' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: var(--tile-w) var(--tile-h);
+}
+
+/* A sumi-e brush-stroke top edge: the section is painted over the one above
+   with a dry brush (kasure), its edge breaking into bristle streaks. Each
+   border uses a different stroke (public/textures/brush-edge-*.svg). */
+.kr-brush {
+  --edge: clamp(44px, 6vw, 84px);
+  margin-top: calc(-1 * var(--edge));
+  padding-top: calc(var(--pad) + var(--edge));
+  -webkit-mask:
+    var(--brush) 0 0 / 100% var(--edge) no-repeat,
+    linear-gradient(#000, #000) 0 calc(var(--edge) - 1px) / 100% calc(100% - var(--edge) + 1px) no-repeat;
+  mask:
+    var(--brush) 0 0 / 100% var(--edge) no-repeat,
+    linear-gradient(#000, #000) 0 calc(var(--edge) - 1px) / 100% calc(100% - var(--edge) + 1px) no-repeat;
+}
+
+.kr-brush-a { --brush: url("/textures/brush-edge-a.svg"); }
+.kr-brush-b { --brush: url("/textures/brush-edge-b.svg"); }
+.kr-brush-c { --brush: url("/textures/brush-edge-c.svg"); }
+.kr-brush-d { --brush: url("/textures/brush-edge-d.svg"); }
+
+/* section headings */
+.kr-h2 {
+  margin: 0;
+  font-family: var(--font-gang);
+  font-weight: 400;
+  font-size: clamp(40px, 7vw, 92px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.kr-lede {
+  max-width: 34em;
+  margin: 24px 0 0;
+  font-size: clamp(16px, 1.35vw, 19px);
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+/* ------------------------------------------------------------ story */
+.kr-story {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.kr-story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(40px, 6vw, 96px);
+}
+
+.kr-story-media {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.kr-story-ring,
+.kr-story-bowl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: auto;
+}
+
+.kr-story-ring {
+  opacity: 0.95;
+  filter: drop-shadow(0 30px 40px rgba(60, 20, 0, 0.35));
+}
+
+.kr-story-bowl {
+  inset: 13%;
+  width: 74%;
+  filter: drop-shadow(0 30px 40px rgba(40, 0, 0, 0.45));
+}
+
+.kr-steam {
+  position: absolute;
+  left: 30%;
+  top: -14%;
+  width: 40%;
+  overflow: visible;
+}
+
+.kr-steam path {
+  fill: none;
+  stroke: rgba(122, 11, 16, 0.35);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.kr-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 44px;
+}
+
+.kr-stat {
+  padding: 22px 18px;
+  border-radius: 18px;
+  background: rgba(122, 11, 16, 0.07);
+  border: 1px solid rgba(122, 11, 16, 0.14);
+  transition: background 0.3s;
+}
+
+.kr-stat:hover {
+  background: rgba(122, 11, 16, 0.12);
+}
+
+.kr-stat-num {
+  display: block;
+  font-family: var(--font-gang);
+  font-size: clamp(36px, 4.4vw, 58px);
+  line-height: 1;
+  color: var(--red);
+}
+
+.kr-stat-label {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.75;
+}
+
+/* ------------------------------------------------------------ menu */
+.kr-menu {
+  /* deep red that darkens into the process section's near-black at the bottom */
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(233, 133, 47, 0.18), transparent 70%),
+    linear-gradient(180deg, var(--deep) 0%, var(--deep) 70%, var(--ink) 100%);
+  --wave-alpha: 0.32;
+}
+
+.kr-menu-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 48px;
+}
+
+.kr-tabs {
+  position: relative;
+  display: inline-flex;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(244, 231, 210, 0.08);
+  border: 1px solid rgba(244, 231, 210, 0.14);
+}
+
+.kr-tab {
+  position: relative;
+  z-index: 1;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--cream);
+  font: 500 15px var(--font-body), sans-serif;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.kr-tab[aria-selected="true"] {
+  color: var(--deep);
+}
+
+.kr-tab-pill {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  border-radius: 999px;
+  background: var(--orange);
+  box-shadow: 0 6px 18px rgba(233, 133, 47, 0.35);
+}
+
+.kr-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  /* rows keep their natural height even while the grid's own height is held
+     during a category switch (otherwise they stretch to fill it) */
+  align-content: start;
+  gap: 22px;
+}
+
+.kr-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border-radius: 26px;
+  background: linear-gradient(160deg, rgba(122, 11, 16, 0.75), rgba(40, 3, 5, 0.9));
+  border: 1px solid rgba(244, 231, 210, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.kr-card-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 220, 170, 0.22), transparent 55%);
+  transition: opacity 0.3s;
+}
+
+.kr-card:hover .kr-card-glare {
+  opacity: 1;
+}
+
+.kr-card-media {
+  position: relative;
+  aspect-ratio: 1;
+  margin: -6px -6px 14px;
+  transform: translateZ(40px);
+}
+
+.kr-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.5));
+}
+
+.kr-card-tag {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(233, 133, 47, 0.16);
+  color: var(--orange);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.kr-card h3 {
+  margin: 12px 0 6px;
+  font-family: var(--font-gang);
+  font-weight: 400;
+  font-size: 26px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kr-card p {
+  flex: 1;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.75;
+}
+
+.kr-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  transform: translateZ(24px);
+}
+
+.kr-price {
+  font-family: var(--font-gang);
+  font-size: 24px;
+  color: var(--gold);
+}
+
+.kr-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--deep);
+  font: 700 14px var(--font-body), sans-serif;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+
+.kr-add:hover {
+  background: var(--orange);
+  color: var(--deep);
+}
+
+.kr-add svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* the little bowl that flies to the cart */
+.kr-fly {
+  position: fixed;
+  z-index: 90;
+  pointer-events: none;
+  object-fit: contain;
+}
+
+/* ------------------------------------------------------------ cart */
+.kr-cart {
+  position: fixed;
+  right: clamp(16px, 3vw, 32px);
+  bottom: clamp(16px, 3vw, 32px);
+  z-index: 80;
+  font-family: var(--font-body), sans-serif;
+}
+
+.kr-cart-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--deep);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.kr-cart-btn svg {
+  width: 28px;
+  height: 28px;
+}
+
+.kr-cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--red);
+  font: 700 13px/24px var(--font-body), sans-serif;
+}
+
+.kr-cart-panel {
+  position: absolute;
+  right: 0;
+  bottom: 76px;
+  width: min(300px, calc(100vw - 32px));
+  padding: 20px;
+  border-radius: 22px;
+  background: var(--cream);
+  color: var(--ink);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+  transform-origin: 100% 100%;
+  visibility: hidden;
+}
+
+.kr-cart-panel h4 {
+  margin: 0 0 12px;
+  font-family: var(--font-gang);
+  font-weight: 400;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.kr-cart-panel ul {
+  max-height: 220px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.kr-cart-panel li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(23, 5, 5, 0.15);
+  font-size: 14px;
+}
+
+.kr-cart-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------ ramen across japan
+   A pinned, sideways journey (journey.tsx): one screen-wide panel per stop,
+   a rail with stations and a train along the bottom. */
+.kr-journey {
+  position: relative;
+  /* room under the ride for the next section's brush-stroke edge */
+  padding-bottom: clamp(44px, 6vw, 84px);
+  background: linear-gradient(180deg, var(--ink) 0%, #200707 100%);
+}
+
+.kr-journey-pin {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.kr-journey-track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  will-change: transform;
+}
+
+.kr-journey-intro,
+.kr-stop {
+  position: relative;
+  flex: none;
+  width: 100vw;
+  height: 100%;
+  padding: clamp(70px, 10vh, 110px) var(--gutter) clamp(110px, 16vh, 150px);
+}
+
+.kr-journey-intro {
+  display: grid;
+  align-content: center;
+}
+
+.kr-journey-intro .kr-h2 {
+  max-width: 9em;
+}
+
+.kr-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin: 36px 0 0;
+  font-family: var(--font-gang);
+  font-size: 16px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.kr-hint svg {
+  width: 40px;
+  height: 14px;
+}
+
+.kr-stop {
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: clamp(30px, 5vw, 80px);
+}
+
+/* the city's name, huge and hollow, drifting behind the panel */
+.kr-stop-big {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: -2;
+  translate: 0 -55%;
+  font-family: var(--font-gang);
+  font-size: clamp(120px, 24vw, 380px);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(233, 133, 47, 0.16);
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* the city's landmark, a pale silhouette rising behind the bowl */
+.kr-stop-mark {
+  position: absolute;
+  right: 4%;
+  bottom: 0;
+  z-index: -1;
+  width: clamp(220px, 34vw, 520px);
+  height: auto;
+  color: rgba(244, 231, 210, 0.09);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.kr-snow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.kr-snow i {
+  position: absolute;
+  top: -10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(244, 231, 210, 0.75);
+  will-change: transform;
+}
+
+.kr-stop-city {
+  margin: 0;
+  font-family: var(--font-gang);
+  font-weight: 400;
+  font-size: clamp(54px, 8vw, 120px);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.kr-stop-style {
+  margin: 14px 0 0;
+  font-size: clamp(18px, 1.7vw, 24px);
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.kr-stop-style span {
+  font-weight: 400;
+  color: var(--cream);
+  opacity: 0.6;
+}
+
+.kr-stop-text {
+  max-width: 30em;
+  margin: 18px 0 0;
+  font-size: clamp(15px, 1.25vw, 18px);
+  line-height: 1.7;
+  opacity: 0.78;
+}
+
+.kr-stop-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.kr-stop-plate {
+  position: relative;
+  width: min(36vw, 62svh, 540px);
+  aspect-ratio: 1;
+  will-change: transform;
+}
+
+.kr-stop-bowl {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.55));
+  will-change: transform;
+}
+
+.kr-stop-steam {
+  position: absolute;
+  left: 30%;
+  top: -18%;
+  width: 40%;
+  overflow: visible;
+}
+
+.kr-stop-steam path {
+  fill: none;
+  stroke: rgba(244, 231, 210, 0.3);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.kr-stop-garnish {
+  position: absolute;
+  right: 4%;
+  bottom: 2%;
+  width: clamp(80px, 11vw, 170px);
+  height: auto;
+  filter: drop-shadow(0 14px 16px rgba(0, 0, 0, 0.5));
+  will-change: transform;
+}
+
+/* the rail along the bottom: stations, a filling line and the train */
+.kr-rail {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: clamp(40px, 7vh, 70px);
+}
+
+.kr-rail-line {
+  position: relative;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(244, 231, 210, 0.14);
+}
+
+.kr-rail-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--orange), var(--gold));
+  transform-origin: 0 50%;
+}
+
+.kr-station {
+  position: absolute;
+  top: 50%;
+  translate: -50% -50%;
+}
+
+.kr-station i {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(244, 231, 210, 0.4);
+  border-radius: 50%;
+  background: var(--ink);
+  transition: background 0.4s, border-color 0.4s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.kr-station b {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  translate: -50% 0;
+  font-family: var(--font-gang);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0.45;
+  transition: opacity 0.4s, color 0.4s;
+}
+
+.kr-station.is-on i {
+  border-color: var(--orange);
+  background: var(--orange);
+  transform: scale(1.35);
+}
+
+.kr-station.is-on b {
+  color: var(--orange);
+  opacity: 1;
+}
+
+.kr-train {
+  position: absolute;
+  left: -60px;
+  bottom: 4px;
+  width: 120px;
+  height: auto;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.5));
+}
+
+/* phones: stack each stop (bowl above words), still riding sideways */
+@media (max-width: 767px) {
+  .kr-stop {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 18px;
+    padding-top: 40px;
+  }
+
+  .kr-stop-media {
+    order: -1;
+  }
+
+  .kr-stop-plate {
+    width: min(64vw, 38svh);
+  }
+
+  .kr-stop-mark {
+    right: -8%;
+    width: 80vw;
+  }
+
+  .kr-station b {
+    font-size: 10px;
+  }
+
+  .kr-train {
+    width: 84px;
+    left: -42px;
+  }
+}
+
+/* reduced motion: no ride, just the stops one under another */
+@media (prefers-reduced-motion: reduce) {
+  .kr-journey-pin {
+    height: auto;
+  }
+
+  .kr-journey-track {
+    flex-direction: column;
+    width: auto;
+  }
+
+  .kr-journey-intro,
+  .kr-stop {
+    width: auto;
+    height: auto;
+  }
+
+  .kr-rail {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------ build your bowl */
+.kr-build {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.kr-build-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: clamp(40px, 6vw, 90px);
+}
+
+.kr-build-bowl {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 560px;
+  margin-inline: auto;
+  width: 100%;
+}
+
+.kr-build-bowl > svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 30px 40px rgba(40, 0, 0, 0.4));
+}
+
+.kr-topping {
+  position: absolute;
+  height: auto;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.kr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.kr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 10px;
+  border: 1.5px solid rgba(122, 11, 16, 0.25);
+  border-radius: 999px;
+  background: #fff8ec;
+  color: var(--ink);
+  font: 500 15px var(--font-body), sans-serif;
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s, color 0.25s;
+}
+
+.kr-chip img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.kr-chip small {
+  opacity: 0.6;
+}
+
+.kr-chip[aria-pressed="true"] {
+  border-color: var(--red);
+  background: var(--red);
+  color: var(--cream);
+}
+
+.kr-build-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 34px;
+  padding: 18px 18px 18px 26px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.kr-build-total strong {
+  font-family: var(--font-gang);
+  font-weight: 400;
+  font-size: 30px;
+  color: var(--gold);
+}
+
+.kr-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--orange);
+  color: var(--deep);
+  font: 700 15px var(--font-body), sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.kr-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--cream);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.45s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.kr-btn:hover::before {
+  transform: scaleX(1);
+}
+
+/* ------------------------------------------------------------ visit */
+.kr-visit {
+  /* red that sinks into the footer's near-black at the bottom */
+  background:
+    radial-gradient(ellipse 60% 60% at 85% 30%, rgba(233, 133, 47, 0.22), transparent 70%),
+    linear-gradient(180deg, var(--red) 0%, var(--red) 62%, var(--ink) 100%);
+  --wave-alpha: 0.26;
+}
+
+.kr-visit-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+  gap: clamp(40px, 6vw, 90px);
+}
+
+.kr-hours {
+  display: grid;
+  gap: 2px;
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kr-hours li {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(244, 231, 210, 0.16);
+  font-size: 16px;
+}
+
+.kr-hours span:last-child {
+  font-family: var(--font-gang);
+  letter-spacing: 0.06em;
+  color: var(--cream);
+}
+
+.kr-address {
+  margin: 28px 0 0;
+  font-style: normal;
+  line-height: 1.7;
+  opacity: 0.85;
+}
+
+.kr-visit-side {
+  display: grid;
+  justify-items: center;
+  gap: 40px;
+}
+
+.kr-lantern {
+  width: clamp(150px, 18vw, 220px);
+  transform-origin: 50% 0;
+  overflow: visible;
+  filter: drop-shadow(0 30px 40px rgba(30, 0, 0, 0.5));
+}
+
+.kr-magnet {
+  display: inline-grid;
+  place-items: center;
+  width: 180px;
+  height: 180px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--red);
+  font-family: var(--font-gang);
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  box-shadow: 0 24px 50px rgba(30, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.kr-magnet span {
+  display: block;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------ footer */
+.kr-footer {
+  --pad: 0px;
+  position: relative;
+  padding: clamp(70px, 10vw, 130px) 0 34px;
+  background: var(--ink);
+  overflow: hidden;
+}
+
+.kr-giant {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0;
+  font-family: var(--font-gang);
+  font-weight: 400;
+  font-size: clamp(64px, 15.5vw, 230px);
+  line-height: 0.9;
+  color: var(--cream);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.kr-giant-word {
+  display: inline-flex;
+  overflow: hidden;
+  padding: 0.06em 0.12em 0;
+}
+
+.kr-giant-char {
+  display: inline-block;
+  will-change: transform;
+}
+
+.kr-giant-char.is-accent {
+  color: var(--orange);
+}
+
+.kr-foot-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: clamp(40px, 6vw, 70px);
+  padding-top: 24px;
+  border-top: 1px solid rgba(244, 231, 210, 0.12);
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.kr-top {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1.5px solid rgba(244, 231, 210, 0.3);
+  border-radius: 50%;
+  background: none;
+  color: var(--cream);
+  cursor: pointer;
+  transition: border-color 0.3s, background 0.3s, color 0.3s;
+}
+
+.kr-top:hover {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: var(--deep);
+}
+
+.kr-top svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* info columns along the top of the footer */
+.kr-foot-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1.4fr;
+  gap: clamp(28px, 4vw, 56px);
+  padding-bottom: clamp(30px, 4vw, 50px);
+}
+
+.kr-foot-brand {
+  margin: 0;
+  font-family: var(--font-gang);
+  font-size: 30px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kr-foot-title {
+  margin: 0 0 16px;
+  font-family: var(--font-gang);
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.kr-foot-text {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.65;
+  opacity: 0.72;
+}
+
+.kr-foot-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+
+.kr-foot-hours li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  opacity: 0.85;
+}
+
+.kr-foot-hours li span:last-child {
+  font-family: var(--font-gang);
+  letter-spacing: 0.05em;
+}
+
+/* links: an arrow slides in and the label steps aside */
+.kr-foot-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: gap 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s, opacity 0.3s;
+}
+
+.kr-foot-link svg {
+  width: 0;
+  height: 10px;
+  color: var(--orange);
+  transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.kr-foot-link:hover,
+.kr-foot-link:focus-visible {
+  gap: 10px;
+  color: var(--orange);
+  opacity: 1;
+}
+
+.kr-foot-link:hover svg,
+.kr-foot-link:focus-visible svg {
+  width: 16px;
+}
+
+/* the open-now sign */
+.kr-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(244, 231, 210, 0.07);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.kr-open-dot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #9a8b80;
+}
+
+.kr-open.is-open .kr-open-dot {
+  background: #6bd38b;
+}
+
+.kr-open.is-open .kr-open-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kr-open.is-open .kr-open-dot::after {
+    animation: kr-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes kr-ping {
+  to {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* noodle club signup */
+.kr-signup {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.kr-signup-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.kr-signup input {
+  width: 100%;
+  padding: 10px 2px;
+  border: 0;
+  border-bottom: 1.5px solid rgba(244, 231, 210, 0.25);
+  background: none;
+  color: var(--cream);
+  font: 15px var(--font-body), sans-serif;
+  outline: none;
+}
+
+.kr-signup input::placeholder {
+  color: rgba(244, 231, 210, 0.4);
+}
+
+/* the underline fills in from the left on focus */
+.kr-signup-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.5s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.kr-signup input:focus ~ .kr-signup-line {
+  transform: scaleX(1);
+}
+
+.kr-signup .kr-btn {
+  padding: 11px 20px;
+}
+
+.kr-thanks {
+  margin: 22px 0 0;
+  font-family: var(--font-gang);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--orange);
+}
+
+.kr-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* the pluckable noodle */
+.kr-noodle {
+  display: block;
+  width: 100%;
+  height: 92px;
+  cursor: grab;
+  overflow: visible;
+}
+
+.kr-noodle path {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.kr-noodle path:last-child {
+  stroke: #f0c27a;
+  stroke-width: 3.5;
+  opacity: 0.8;
+}
+
+/* the wordmark */
+.kr-giant-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 30px);
+}
+
+/* bottom bar */
+.kr-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.kr-social {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid rgba(244, 231, 210, 0.22);
+  border-radius: 50%;
+  color: var(--cream);
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.kr-social:hover {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: var(--deep);
+}
+
+.kr-social svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 960px) {
+  .kr-foot-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .kr-foot-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* ------------------------------------------------------------ small screens */
+@media (max-width: 860px) {
+  .kr-story-grid,
+  .kr-build-grid,
+  .kr-visit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kr-story-media {
+    max-width: 420px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .kr-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .kr-stat {
+    padding: 16px 12px;
+  }
+}
+

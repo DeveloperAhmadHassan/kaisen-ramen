@@ -1,0 +1,157 @@
+/* Reload curtain (reload-curtain.tsx): a noren hanging over the page.
+   Hidden unless <html data-reload>. */
+.kr-curtain {
+  display: none;
+}
+
+html[data-reload] .kr-curtain {
+  --cream: #f4e7d2;
+  --dye: #7a0b10;
+  --seam: 0.5px; /* half the gap between panels: a hairline, so the print stays legible */
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+  /* failsafe: never leave the page covered if the script doesn't run */
+  animation: kr-curtain-failsafe 0s 5s forwards;
+}
+
+@keyframes kr-curtain-failsafe {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* one strip of dyed cloth; a hair narrower than its slot so the seams show */
+.kr-noren-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(20vw - 2 * var(--seam));
+  margin-left: var(--seam);
+  overflow: hidden;
+  transform-origin: 50% 0;
+  background-color: var(--dye);
+  background-image:
+    /* folds: darker at the edges, a soft highlight down the middle */
+    linear-gradient(90deg, rgba(0, 0, 0, 0.32), rgba(255, 255, 255, 0.05) 30%, rgba(255, 255, 255, 0.07) 50%, rgba(0, 0, 0, 0.06) 75%, rgba(0, 0, 0, 0.34)),
+    /* the weave */
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 4px);
+  /* shadow under the hem only (negative spread), so it never falls on the neighbouring panels' print */
+  box-shadow: 0 26px 22px -14px rgba(15, 0, 0, 0.6);
+  will-change: transform;
+}
+
+/* stitched hems top and bottom */
+.kr-noren-panel::before,
+.kr-noren-panel::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  border-top: 2px dashed rgba(244, 231, 210, 0.45);
+}
+
+.kr-noren-panel::before {
+  top: clamp(34px, 6vh, 56px);
+}
+
+.kr-noren-panel::after {
+  bottom: clamp(14px, 2.5vh, 24px);
+}
+
+/* the shared print: as wide as the whole curtain, offset per panel */
+.kr-noren-print {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(14px, 3vmin, 28px);
+}
+
+.kr-crest {
+  width: clamp(170px, 40vmin, 340px);
+  height: auto;
+  overflow: visible;
+}
+
+.kr-crest-disc {
+  fill: var(--cream);
+}
+
+.kr-crest-line {
+  fill: none;
+  stroke: var(--dye);
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+}
+
+.kr-crest-ring {
+  stroke-width: 3;
+}
+
+.kr-crest-steam {
+  stroke-width: 6;
+}
+
+.kr-crest-foot {
+  stroke-width: 8;
+}
+
+.kr-crest-bowl {
+  fill: var(--dye);
+}
+
+.kr-crest-sticks path {
+  fill: none;
+  stroke: var(--dye);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.kr-noren-word {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  color: var(--cream);
+  font-size: clamp(30px, 7.5vmin, 66px);
+  line-height: 1.05;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* each line clips its letters so they rise out of it */
+.kr-noren-line {
+  display: block;
+  overflow: hidden;
+  padding: 0.1em 0.2em 0.04em 0.34em;
+}
+
+.kr-noren-char {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* the wooden rod the curtain hangs from */
+.kr-noren-rod {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(14px, 2.4vh, 22px);
+  background: linear-gradient(180deg, #8a5a33 0%, #5f3a1d 55%, #3e240f 100%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  will-change: transform;
+}
+
+/* until the timeline has set its start states, show the plain cloth only */
+.kr-curtain[data-state="pending"] :is(.kr-crest, .kr-noren-word) {
+  visibility: hidden;
+}
