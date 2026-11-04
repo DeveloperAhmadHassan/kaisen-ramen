@@ -14,6 +14,7 @@ gsap.registerPlugin(useGSAP);
 const bowls = [
   {
     src: "/images/bowl-right.png",
+    alt: "Miso ramen with charred chicken, corn and a soft egg",
     angle: 0,
     name: ["Miso", "Tori"],
     left: { src: "/images/garnish-egg-half.png", w: 786, h: 648 },
@@ -21,6 +22,7 @@ const bowls = [
   },
   {
     src: "/images/bowl-main.png",
+    alt: "Spicy ramen with braised beef, kimchi and a jammy egg",
     angle: 90,
     name: ["Kara", "Tori"],
     left: { src: "/images/chicken.png", w: 706, h: 398 },
@@ -28,6 +30,7 @@ const bowls = [
   },
   {
     src: "/images/bowl-left.png",
+    alt: "Chashu pork ramen with soft eggs, scallions and chili",
     angle: 180,
     name: ["Chashu", "Men"],
     left: { src: "/images/garnish-green-onion.png", w: 793, h: 800 },
@@ -35,6 +38,7 @@ const bowls = [
   },
   {
     src: "/images/bowl-top.png",
+    alt: "Soba noodles in dashi with a raw egg yolk and leek",
     angle: 270,
     name: ["Tsukimi", "Soba"],
     left: { src: "/images/garnish-egg.png", w: 721, h: 800 },
@@ -283,7 +287,7 @@ export default function RamenCarousel() {
             bowlEls.current[i] = el;
           }}
           src={bowl.src}
-          alt=""
+          alt={bowl.alt}
           width={1000}
           height={1000}
           sizes={sizes(BOWL_D)}

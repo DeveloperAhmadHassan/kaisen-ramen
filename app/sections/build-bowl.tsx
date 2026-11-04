@@ -5,7 +5,8 @@ import type { MouseEvent } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { addToCart, money } from "./cart";
+import { flyToCart } from "../cart/fly";
+import { money } from "../cart/store";
 import { MOTION_OK, useReveal } from "./reveal";
 
 gsap.registerPlugin(useGSAP);
@@ -128,7 +129,8 @@ export default function BuildBowl() {
   const order = (e: MouseEvent<HTMLButtonElement>) => {
     gsap.fromTo(e.currentTarget, { scale: 0.92 }, { scale: 1, duration: 0.6, ease: "elastic.out(1.2, 0.4)" });
     const names = TOPPINGS.filter((t) => picked.includes(t.id)).map((t) => t.name.toLowerCase());
-    addToCart({ name: names.length ? `Custom bowl (${names.join(", ")})` : "Custom bowl", price: totalOf(picked) });
+    const img = scope.current?.querySelector<HTMLImageElement>(".kr-topping");
+    flyToCart(img, { id: `custom-${names.join("-")}`, name: names.length ? `Custom bowl (${names.join(", ")})` : "Custom bowl", price: totalOf(picked), src: "/images/bowl-right.png" });
   };
 
   return (

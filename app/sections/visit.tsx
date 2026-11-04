@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import type { PointerEvent } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { HOURS } from "./hours";
@@ -97,12 +98,12 @@ export default function Visit() {
         </div>
         <div className="kr-visit-side">
           <Lantern />
-          <a href="#visit" className="kr-magnet" onPointerMove={pull} onPointerLeave={release}>
+          <Link href="/reserve" className="kr-magnet" onPointerMove={pull} onPointerLeave={release}>
             <span>
               Reserve
               <br />a table
             </span>
-          </a>
+          </Link>
         </div>
       </div>
     </section>

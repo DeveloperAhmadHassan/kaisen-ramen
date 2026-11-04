@@ -1,5 +1,5 @@
 /* The landing-page sections below the hero (app/sections/*). */
-.kr-sections {
+:root {
   --red: #7a0b10;
   --deep: #3d0306;
   --ink: #170505;
@@ -9,6 +9,9 @@
   --gold: #d79a4a;
   --gutter: clamp(18px, 5vw, 72px);
   --max: 1200px;
+}
+
+.kr-sections {
   font-family: var(--font-body), system-ui, sans-serif;
   color: var(--cream);
   background: var(--deep);
@@ -409,93 +412,6 @@
   z-index: 90;
   pointer-events: none;
   object-fit: contain;
-}
-
-/* ------------------------------------------------------------ cart */
-.kr-cart {
-  position: fixed;
-  right: clamp(16px, 3vw, 32px);
-  bottom: clamp(16px, 3vw, 32px);
-  z-index: 80;
-  font-family: var(--font-body), sans-serif;
-}
-
-.kr-cart-btn {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 62px;
-  height: 62px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--orange);
-  color: var(--deep);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-}
-
-.kr-cart-btn svg {
-  width: 28px;
-  height: 28px;
-}
-
-.kr-cart-count {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: var(--cream);
-  color: var(--red);
-  font: 700 13px/24px var(--font-body), sans-serif;
-}
-
-.kr-cart-panel {
-  position: absolute;
-  right: 0;
-  bottom: 76px;
-  width: min(300px, calc(100vw - 32px));
-  padding: 20px;
-  border-radius: 22px;
-  background: var(--cream);
-  color: var(--ink);
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
-  transform-origin: 100% 100%;
-  visibility: hidden;
-}
-
-.kr-cart-panel h4 {
-  margin: 0 0 12px;
-  font-family: var(--font-gang);
-  font-weight: 400;
-  font-size: 20px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.kr-cart-panel ul {
-  max-height: 220px;
-  margin: 0;
-  padding: 0;
-  overflow: auto;
-  list-style: none;
-}
-
-.kr-cart-panel li {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px dashed rgba(23, 5, 5, 0.15);
-  font-size: 14px;
-}
-
-.kr-cart-total {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-  font-weight: 700;
 }
 
 /* ------------------------------------------------------------ ramen across japan

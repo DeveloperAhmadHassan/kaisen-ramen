@@ -6,15 +6,14 @@ import HeroIntro from "./hero-intro";
 import RamenCarousel from "./ramen-carousel";
 import AnchorScroll from "./sections/anchor-scroll";
 import BuildBowl from "./sections/build-bowl";
-import Cart from "./sections/cart";
 import Footer from "./sections/footer";
 import Menu from "./sections/menu";
 import Journey from "./sections/journey";
 import Story from "./sections/story";
 import Ticker from "./sections/ticker";
 import Visit from "./sections/visit";
-import "./hero.css";
-import "./sections/sections.css";
+import JsonLd from "./site/json-ld";
+import { SITE_DESCRIPTION, menuSchema, pageMeta, restaurantSchema, websiteSchema } from "./site/seo";
 
 // `m` is each pair's box in the portrait frame: pulled into the bottom corners
 const art = [
@@ -22,9 +21,12 @@ const art = [
   { src: "/images/chopsticks-right.png", box: [548, 505, 748], m: [474, 622, 594], w: 1578, h: 789, className: "kr-chopsticks" },
 ] as const;
 
+export const metadata = pageMeta({ description: SITE_DESCRIPTION, path: "/" });
+
 export default function Home() {
   return (
     <main className="kr-page">
+      <JsonLd data={[restaurantSchema(), websiteSchema(), menuSchema()]} />
       <section className="kr-hero" aria-label="Kaisen Ramen">
         <HeroBackdrop />
         <noscript>
@@ -88,7 +90,6 @@ export default function Home() {
         <BuildBowl />
         <Visit />
         <Footer />
-        <Cart />
       </div>
       <AnchorScroll />
     </main>

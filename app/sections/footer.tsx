@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent, PointerEvent } from "react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
@@ -13,11 +14,11 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
 const WORDS = ["Kaisen", "Ramen"];
 const LINKS = [
-  ["Our story", "#story"],
-  ["Menu", "#order"],
-  ["Ramen across Japan", "#journey"],
-  ["Build a bowl", "#build"],
-  ["Visit", "#visit"],
+  ["Menu", "/menu"],
+  ["Our story", "/story"],
+  ["Noodle club", "/club"],
+  ["Reserve a table", "/reserve"],
+  ["Build a bowl", "/#build"],
 ];
 // placeholder profiles: point these at the real accounts
 const SOCIALS = [
@@ -59,7 +60,7 @@ function OpenSign() {
 }
 
 /** Noodle club signup (placeholder: nothing is sent yet). */
-function Signup() {
+export function Signup() {
   const [done, setDone] = useState(false);
   const form = useRef<HTMLFormElement>(null);
   const thanks = useRef<HTMLParagraphElement>(null);
@@ -241,12 +242,12 @@ export default function Footer() {
             <ul className="kr-foot-list">
               {LINKS.map(([label, href]) => (
                 <li key={href}>
-                  <a href={href} className="kr-foot-link">
+                  <Link href={href} className="kr-foot-link">
                     <svg viewBox="0 0 16 10" aria-hidden>
                       <path d="M0 5h14M10 1l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
